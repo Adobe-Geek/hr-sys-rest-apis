@@ -17,7 +17,7 @@ class PlainEmployeeSchema(Schema):
     birth_place = fields.Str()
     address = fields.Str()
     hire_date = fields.Date()
-    # department_id = fields.Int()
+    department_id = fields.Int()
 
 
 class PlainVacationSchema(Schema):
@@ -37,16 +37,16 @@ class VacationUpdateSchema(Schema):
 class DepartmentSchema(PlainDepartmentSchema):
     manager_id = fields.Int(load_only=True)
     # employees = fields.List(fields.Nested(PlainEmployeeSchema()), dump_only=True)
-    employee = fields.Nested(PlainEmployeeSchema(), dump_only=True)
+    employee = fields.Nested(PlainEmployeeSchema, dump_only=True)
 
 
 class EmployeeSchema(PlainEmployeeSchema):
     department_id = fields.Int(load_only=True)
-    vacations = fields.List(fields.Nested(PlainVacationSchema()), dump_only=True)
-    # department = fields.Nested(PlainDepartmentSchema(), dump_only=True)
-    departments = fields.List(fields.Nested(PlainDepartmentSchema()), dump_only=True)
+    vacations = fields.List(fields.Nested(PlainVacationSchema), dump_only=True)
+    department = fields.Nested(PlainDepartmentSchema, dump_only=True)
+    # departments = fields.List(fields.Nested(PlainDepartmentSchema()), dump_only=True)
 
 
 class VacationSchema(PlainVacationSchema):
     employee_id = fields.Int(required=True, load_only=True)
-    employee = fields.Nested(PlainEmployeeSchema(), dump_only=True)
+    employee = fields.Nested(PlainEmployeeSchema, dump_only=True)

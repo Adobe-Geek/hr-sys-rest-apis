@@ -19,5 +19,8 @@ class EmployeeModel(db.Model):
         "VacationModel", back_populates="employee", lazy="dynamic"
     )
     # department = db.relationship("DepartmentModel", back_populates="employees")
-    # departments = db.relationship("DepartmentModel", back_populates="employee")
-    department = db.relationship("DepartmentModel", back_populates="employees")
+    department = db.relationship(
+        "DepartmentModel",
+        # back_populates="department",
+        foreign_keys="EmployeeModel.department_id",
+    )

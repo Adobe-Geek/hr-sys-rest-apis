@@ -15,6 +15,10 @@ class Employee(MethodView):
     @blp.response(200, EmployeeSchema)
     def get(self, employee_id):
         employee = EmployeeModel.query.get_or_404(employee_id)
+        print(employee.department_id)
+        print(employee.department)
+        print(employee.department.name)
+        print(employee.department.__dict__)
         return employee
 
     def delete(self, employee_id):
