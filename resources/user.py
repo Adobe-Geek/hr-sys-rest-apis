@@ -3,9 +3,9 @@ from flask_smorest import Blueprint, abort
 from passlib.hash import pbkdf2_sha256
 from flask_jwt_extended import jwt_required, create_access_token
 from models.user import UserModel
-from schemas import UserSchema
+from schemas import UserSchema, UserLoginSchema
 
-blp = Blueprint("users", __name__, description="operations on users")
+blp = Blueprint("users", __name__, description="Operations on users")
 
 
 @blp.route("/register")
@@ -39,3 +39,16 @@ class User(MethodView):
             abort(404, message="User not found.")
         user.delete_from_db()
         return {"message": "User deleted."}, 200
+
+
+@blp.route("/login")
+class UserLogin(MethodView):
+    @blp.arguments(UserLoginSchema)
+    def post(self, login_data):
+        user = UserModel.query.filter_by(username=login_data["username"]).first()
+
+        if user and UserModel.verify_password(user.password, login_data["password"]):
+            access_token = create_access_token(identity=user.id)
+            return {"access_token": access_token}
+
+        abort(401, message="Invalid credentials.")

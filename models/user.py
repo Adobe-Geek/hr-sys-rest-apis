@@ -1,4 +1,5 @@
 from db import db
+from passlib.hash import pbkdf2_sha256
 
 
 class UserModel(db.Model):
@@ -6,6 +7,14 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
+
+    @staticmethod
+    def hash_password(password):
+        return pbkdf2_sha256.hash(password)
+
+    @staticmethod
+    def verify_password(hashed_password, plain_password):
+        return pbkdf2_sha256.verify(plain_password, hashed_password)
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":

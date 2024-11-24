@@ -1,8 +1,10 @@
 import os
 from flask import Flask
 from flask_smorest import Api
+from flask_jwt_extended import JWTManager
 from db import db
 from flask_migrate import Migrate
+import flask_oauthlib
 import models
 
 from resources.department import blp as DepartmentBlueprint
@@ -35,6 +37,7 @@ def create_app(db_url=None):
     migrate = Migrate(app, db)
 
     api = Api(app)
+    jwt = JWTManager(app)
 
     api.register_blueprint(DepartmentBlueprint)
     api.register_blueprint(EmployeeBlueprint)
