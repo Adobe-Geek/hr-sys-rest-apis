@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields
+from models.user import UserModel
 
 
 class PlainDepartmentSchema(Schema):
@@ -50,3 +51,14 @@ class EmployeeSchema(PlainEmployeeSchema):
 class VacationSchema(PlainVacationSchema):
     employee_id = fields.Int(required=True, load_only=True)
     employee = fields.Nested(PlainEmployeeSchema, dump_only=True)
+
+
+class UserSchema(Schema):
+    class Meta:
+        model = UserModel
+        load_only = ("password",)
+        dump_only = ("id",)
+
+    id = fields.Int()
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)
