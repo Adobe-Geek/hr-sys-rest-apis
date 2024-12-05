@@ -1,12 +1,18 @@
 from db import db
+from flask import request, url_for
 from passlib.hash import pbkdf2_sha256
+from requests import Response
+from libs.mailgun import Mailgun
 
 
 class UserModel(db.Model):
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
+    email = db.Column(db.String(80), nullable=False, unique=True)
+    activated = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def hash_password(password):
@@ -21,8 +27,19 @@ class UserModel(db.Model):
         return cls.query.filter_by(username=username).first()
 
     @classmethod
+    def find_by_email(cls, email: str) -> "UserModel":
+        return cls.query.filter_by(email=email).first()
+
+    @classmethod
     def find_by_id(cls, user_id: int) -> "UserModel":
         return cls.query.get(user_id)
+
+    def send_confirmation_email(self) -> Response:
+        link = request.url_root[:-1] + url_for("users.UserConfirm", user_id=self.id)
+        subject = "Registration confirmation"
+        text = f"Please click link to confirm your registration: {link}"
+        html = f'<html>Please click link to confirm your registration: <a href="{link}">{link}</a></html>'
+        return Mailgun.send_email([self.email], subject, text, html)
 
     def save_to_db(self) -> None:
         db.session.add(self)

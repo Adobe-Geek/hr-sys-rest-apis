@@ -12,9 +12,9 @@ class DepartmentModel(db.Model):
     )
     # employees = db.relationship("EmployeeModel", back_populates="department")
     # employee = db.relationship("EmployeeModel", back_populates="departments")
-    # manager = db.relationship(
-    #     "EmployeeModel", foreign_keys=[manager_id], backref="managed_department"
-    # )
+    manager = db.relationship(
+        "EmployeeModel", foreign_keys=[manager_id], backref="managed_department"
+    )
     employees = db.relationship(
         "EmployeeModel",
         back_populates="department",
