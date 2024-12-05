@@ -47,7 +47,6 @@ def create_app(db_url=None):
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header, jwt_payload):
 
-        print(49)
         return is_token_revoked(jwt_payload)
 
     @jwt.revoked_token_loader
