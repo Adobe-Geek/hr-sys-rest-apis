@@ -2,7 +2,9 @@ from db import db
 from flask import request, url_for
 from passlib.hash import pbkdf2_sha256
 from requests import Response
-from libs.mailgun import Mailgun
+
+# from libs.mailgun import Mailgun
+from utils import send_email_with_smtp
 
 
 class UserModel(db.Model):
@@ -34,12 +36,28 @@ class UserModel(db.Model):
     def find_by_id(cls, user_id: int) -> "UserModel":
         return cls.query.get(user_id)
 
-    def send_confirmation_email(self) -> Response:
-        link = request.url_root[:-1] + url_for("users.UserConfirm", user_id=self.id)
-        subject = "Registration confirmation"
-        text = f"Please click link to confirm your registration: {link}"
-        html = f'<html>Please click link to confirm your registration: <a href="{link}">{link}</a></html>'
-        return Mailgun.send_email([self.email], subject, text, html)
+    # def send_confirmation_email(self) -> Response:
+    #     link = request.url_root[:-1] + url_for("users.UserConfirm", user_id=self.id)
+    #     subject = "Registration confirmation"
+    #     text = f"Please click link to confirm your registration: {link}"
+    #     html = f'<html>Please click link tco confirm your registration: <a href="{link}">{link}</a></html>'
+    #     return Mailgun.send_email([self.email], subject, text, html)
+
+    def send_confirmation_email(self):
+        confirmation_link = url_for(
+            "users.UserConfirm", user_id=self.id, _external=True
+        )
+        subject = "Confirm Your Registration"
+        html_body = f"""
+        <html>
+            <body>
+                <h1>Welcome to Our App!</h1>
+                <p>Click the link below to confirm your registration:</p>
+                <a href="{confirmation_link}">Confirm Registration</a>
+            </body>
+        </html>
+        """
+        send_email_with_smtp(subject=subject, recipient=self.email, body=html_body)
 
     def save_to_db(self) -> None:
         db.session.add(self)

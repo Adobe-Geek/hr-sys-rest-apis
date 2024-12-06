@@ -38,6 +38,11 @@ def create_app(db_url=None):
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
+    app.config["SMTP_SERVER"] = os.getenv("SMTP_SERVER")
+    app.config["SMTP_PORT"] = int(os.getenv("SMTP_PORT"))
+    app.config["SMTP_USERNAME"] = os.getenv("SMTP_USERNAME")
+    app.config["SMTP_PASSWORD"] = os.getenv("SMTP_PASSWORD")
+    app.config["SMTP_SENDER_EMAIL"] = os.getenv("SMTP_SENDER_EMAIL")
 
     migrate = Migrate(app, db)
 
@@ -73,16 +78,6 @@ def create_app(db_url=None):
             jsonify({"message": "Token has expired", "error": "token expired"}),
             401,
         )
-
-    # @jwt.invalid_token_loader
-    # def invalid_token_callback(error):
-    #     print("test test")
-    #     return (
-    #         jsonify(
-    #             {"message": "Signature verification failed", "error": "invalid token"}
-    #         ),
-    #         401,
-    #     )
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
